@@ -80,6 +80,29 @@ public class JdbcTemplateItemRepositoryV1 implements ItemRepository {
 
     @Override
     public List<Item> findAll(ItemSearchCond cond) {
-        return null;
+        String itemName = cond.getItemName();
+        Integer maxPrice = cond.getMaxPrice();
+        String sql = "select id, item_name, price, quantity from item";
+
+        //동적 쿼리 -> 어떤 상황에서는 where가 들어가고, 어떤 상황에서는 like가 들어가는 등 상황에 따라 쿼리가 바뀌는 것
+        if (StringUtils.hasText(itemName) || maxPrice != null) {
+            sql += " where";
+        }
+        boolean andFlag = false;
+        List<Object> param = new ArrayList<>();
+        if (StringUtils.hasText(itemName)) {
+            sql += " item_name like concat('%',?,'%')";
+            param.add(itemName);
+            andFlag = true;
+        }
+        if (maxPrice != null) {
+            if (andFlag) {
+                sql += " and";
+            }
+            sql += " price <= ?";
+            param.add(maxPrice);
+        }
+        log.info("sql={}", sql);
+        return jdbcTemplate.query(sql, itemRowMapper(), param.toArray());
     }
 }
