@@ -88,5 +88,7 @@ class ItemRepositoryTest {
     void test(String itemName, Integer maxPrice, Item... items) {
         List<Item> result = itemRepository.findAll(new ItemSearchCond(itemName, maxPrice));
         assertThat(result).containsExactly(items);
+        //정확히 items로 넘겨준 item만 들어가야하는데 기존에 있던 item중 조건에 맞으면 같이 찾아지니까
+        // findItems 2번 이상하면 (delete or commit,rollback 같은 방안 없다면) test fail남
     }
 }
