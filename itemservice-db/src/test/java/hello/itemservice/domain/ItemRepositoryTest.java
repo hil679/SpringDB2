@@ -11,27 +11,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @SpringBootTest
 class ItemRepositoryTest {
 
     @Autowired
     ItemRepository itemRepository;
 
-    @Autowired
-    PlatformTransactionManager transactionManager; //dataSource처럼 transactionManager도 자동 빈 등록
-    TransactionStatus status;
+//    @Autowired
+//    PlatformTransactionManager transactionManager; //dataSource처럼 transactionManager도 자동 빈 등록
+//    TransactionStatus status;
 
-    @BeforeEach
-    void BeforeEach() {
-        //start transaction
-        status = transactionManager.getTransaction(new DefaultTransactionDefinition());
-    }
+//    @BeforeEach
+//    void BeforeEach() {
+//        //start transaction
+//        status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+//    }
     @AfterEach
     void afterEach() {
         //MemoryItemRepository 의 경우 제한적으로 사용
@@ -39,7 +41,7 @@ class ItemRepositoryTest {
             ((MemoryItemRepository) itemRepository).clearStore();
         }
         //transaction rollback
-        transactionManager.rollback(status); // 굳이 commit하지 않아도 내 database session에서는 조회 가능
+//        transactionManager.rollback(status); // 굳이 commit하지 않아도 내 database session에서는 조회 가능
     }
 
     @Test
