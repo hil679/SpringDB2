@@ -5,26 +5,43 @@ import hello.itemservice.repository.ItemSearchCond;
 import hello.itemservice.repository.ItemUpdateDto;
 import hello.itemservice.repository.memory.MemoryItemRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @SpringBootTest
 class ItemRepositoryTest {
 
     @Autowired
     ItemRepository itemRepository;
 
+//    @Autowired
+//    PlatformTransactionManager transactionManager; //dataSource처럼 transactionManager도 자동 빈 등록
+//    TransactionStatus status;
+
+//    @BeforeEach
+//    void BeforeEach() {
+//        //start transaction
+//        status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+//    }
     @AfterEach
     void afterEach() {
         //MemoryItemRepository 의 경우 제한적으로 사용
         if (itemRepository instanceof MemoryItemRepository) {
             ((MemoryItemRepository) itemRepository).clearStore();
         }
+        //transaction rollback
+//        transactionManager.rollback(status); // 굳이 commit하지 않아도 내 database session에서는 조회 가능
     }
 
     @Test
@@ -88,5 +105,7 @@ class ItemRepositoryTest {
     void test(String itemName, Integer maxPrice, Item... items) {
         List<Item> result = itemRepository.findAll(new ItemSearchCond(itemName, maxPrice));
         assertThat(result).containsExactly(items);
+        //정확히 items로 넘겨준 item만 들어가야하는데 기존에 있던 item중 조건에 맞으면 같이 찾아지니까
+        // findItems 2번 이상하면 (delete or commit,rollback 같은 방안 없다면) test fail남
     }
 }
