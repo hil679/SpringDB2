@@ -23,3 +23,18 @@ ItemService` 에서 스프링 데이터 JPA로 만든 리포지토리를 직접 
 어설픈 추상화는 오히려 독이 되는 경우도 많다. 
 인터페이스를 통한 추상화도 결국 유지보수 비용이 드는 것이다.
 추상화 비용 을 넘어설 만큼 효과가 있을 때 추상화를 도입하는 것이 실용적이다.
+
+
+
+## 실용적인 구조
+JPA와 동적 쿼리에 강한 Querydsl을 같이 사용하는 구조로 변경한다.
+
+##### ItemRepositoryV2
+JpaRepository 를 인터페이스 상속 받아서 스프링 데이터 JPA의 기능을 제공하는 리포지토리가 된다.
+단순 조회 기능을 한다.
+
+##### ItemQueryRepositoryV2
+Querydsl을 사용해서 복잡한 쿼리 문제를 해결한다.
+
+##### ItemServiceV2
+ItemRepositoryV2 와 ItemQueryRepositoryV2 를 의존한다.
